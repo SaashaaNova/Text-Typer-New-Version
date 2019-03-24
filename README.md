@@ -8,7 +8,7 @@
 It's a simple animated component made with React. 
 
 ## Demo
- <a href="https://saashaanova.github.io/Text-Typer/">Demo of Text Typer</a>
+ <a href="https://saashaanova.github.io/Text-Typer-New-Version/">Demo of Text Typer</a>
 
 ## Following the coding style
 I am using <a href="https://eslint.org/">ESLint</a> for linting JavaScript code, so please follow the style :)
