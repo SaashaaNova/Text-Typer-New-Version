@@ -1,19 +1,16 @@
 
 import React, { Component } from 'react';
-// import '../main.css';
 
 class TextTyper extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      content: this.props.content,
-      firstWritten: true,
+      textToType: [],
       typeOneTime: [],
       typeInfinity: [],
-      listArr: [],
-      currLetterNumb: 0,
-      currStringNumb: 0,
+      counter: 0,
+      currentLetter: 0,
       delay: this.props.delay,
       intervalSpeed: this.props.interval,
     };
@@ -34,92 +31,63 @@ class TextTyper extends Component {
 
   startTyping = () => {
     this.typeInterval = setInterval(() => {
-      const {
-        currLetterNumb,
-        currStringNumb,
-        content,
-        typeInfinity,
-        listArr,
-        firstWritten,
+
+      const {content} = this.props;
+      const { 
+        typeOneTime, 
+        typeInfinity, 
+        currentLetter, 
+        counter,
       } = this.state;
 
-      if (firstWritten) {
-        this.typeOneTime();
-      } else if (currStringNumb < content.length) {
-        const currentNew = content[currStringNumb];
 
+      let arrayOfSentences = content.match( /[^\.!\?]+[\.!\?]+/g ); 
+      arrayOfSentences.push(' ')
+      let splitSentence = arrayOfSentences[counter].split('');
+      const start = splitSentence[currentLetter];
+
+      if(currentLetter !== splitSentence.length && counter === 0) {
         this.setState({
-          typeInfinity: [...typeInfinity, currentNew[currLetterNumb]],
-          currLetterNumb: currLetterNumb + 1,
-        });
-
-        if (currLetterNumb >= currentNew.length) {
-          this.setState({
-            currLetterNumb: 0,
-            currStringNumb: currStringNumb + 1,
-            listArr: [...listArr, typeInfinity],
-            typeInfinity: [],
-          });
-        }
+          typeOneTime: [...typeOneTime, start],
+          currentLetter: currentLetter + 1,
+          textToType: [typeOneTime]
+        })        
       } else {
         this.setState({
-          currLetterNumb: 0,
-          currStringNumb: 0,
-          typeInfinity: [],
-          listArr: [],
-        });
+          typeInfinity: [...typeInfinity, start],
+          currentLetter: currentLetter + 1,
+          textToType: [typeOneTime, typeInfinity]
+        })  
       }
-    }, this.state.intervalSpeed);
+
+      if (currentLetter === splitSentence.length) {    
+        this.setState({
+          counter: counter + 1,
+          currentLetter: 0,      
+        }) 
+      } 
+        
+      if (counter === arrayOfSentences.length - 1) {
+        
+          this.setState({
+            counter: 1,
+            currentLetter: 0,
+            typeInfinity: [], 
+          })
+        
+      } 
+   
+    }, this.state.intervalSpeed)
   }
 
 
- typeOneTime = () => {
-   const {
-     typeOneTime,
-     currLetterNumb,
-     content,
-   } = this.state;
-
-   const currentSentence = content[0];
-
-   this.setState({
-     typeOneTime: [...typeOneTime, currentSentence[currLetterNumb]],
-     currLetterNumb: currLetterNumb + 1,
-   });
-
-   if (currLetterNumb >= currentSentence.length - 1) {
-     this.setState({
-       content: content.slice(1),
-       firstWritten: false,
-       currLetterNumb: 0,
-     });
-   }
- };
-
- createList = () => {
-   const table = [];
-
-   for (let i = 0; i < this.state.listArr.length; i++) {
-     table.push(<li key={i}>{this.state.listArr[i]}</li>);
-   }
-
-   return table;
- };
-
  render() {
-   const {
-     typeOneTime,
-     typeInfinity,
-   } = this.state;
+  const { textToType } = this.state;
 
    return (
      <div className="main-container">
        <div className="text-container">
-         <h1>{typeOneTime}</h1>
-         <ul>
-           {this.createList()}
-         </ul>
-         <p>{typeInfinity}</p>
+         <h1>{textToType}</h1>
        </div>
      </div>
    );
